@@ -1,2 +1,3 @@
 # Dolphin
-DataOceanAI Open Large Speech Model (Test).
+DataOceanAI Open Large Speech Model.
+
