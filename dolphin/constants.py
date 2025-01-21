@@ -1,0 +1,8 @@
+# encoding: utf8
+
+SAMPLE_RATE = 16000
+SPEECH_LENGTH = 30
+
+NOTIME_SYMBOL = "<notimestamp>"
+FIRST_TIME_SYMBOL = "<0.00>"
+LAST_TIME_SYMBOL = "<30.00>"
