@@ -1,0 +1,2 @@
+espnet==202402
+torchaudio>=2.4.1
