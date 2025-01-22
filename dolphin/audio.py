@@ -7,6 +7,9 @@ import subprocess
 from .constants import SAMPLE_RATE
 
 
+logger = logging.getLogger("dolphin")
+
+
 # copy from whisper
 def load_audio(file: str, sr: int = SAMPLE_RATE):
     """
@@ -28,7 +31,7 @@ def load_audio(file: str, sr: int = SAMPLE_RATE):
     try:
         out = subprocess.run(cmd, capture_output=True, check=True).stdout
     except Exception as e:
-        logging.error(f"load audio error, {e}")
+        logger.error(f"load audio error, {e}")
         raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
 
     return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0

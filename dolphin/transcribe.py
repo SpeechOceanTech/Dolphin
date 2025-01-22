@@ -13,6 +13,8 @@ import torch
 from .audio import load_audio
 from .model import DolphinSpeech2Text
 
+logger = logging.getLogger("dolphin")
+
 
 def str2bool(value: str) -> bool:
     return bool(strtobool(value))
@@ -60,14 +62,13 @@ def load_model(
     train_cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets/config.yaml")
     model_file = model_dir / f"{model_name}.pt"
     if not model_file.exists():
-        logging.error(f"model {model_name} not found.")
+        logger.error(f"model {model_name} not found.")
         raise Exception(f"model {model_name} not found, please download the model first.")
 
     model = DolphinSpeech2Text(
         s2t_train_config=train_cfg,
         s2t_model_file=model_file,
         device=device,
-        lang_sym=kwargs.get("lang_sym", "<zh>"),
         task_sym=kwargs.get("task_sym", "<asr>"),
         predict_time=kwargs.get("predict_time", True),
         **kwargs,
@@ -88,25 +89,31 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
     model = load_model(args.model_name, args.model_dir, args.device)
     waveform = load_audio(args.audio)
 
-    result = model(
+    results = model(
         speech=waveform,
         lang_sym=args.lang_sym,
         region_sym=args.region_sym,
         predict_time=args.predict_time,
         padding_speech=args.padding_speech
     )
-    text, _, _, text_nospecial, _ = result
+    text, _, _, text_nospecial, _ = results[0]
 
-    logging.info(f"transcribe result: {text}")
-
+    logger.info(f"decode result, text: {text}, text_nospecial: {text_nospecial}")
     return text, text_nospecial
 
 
 def cli():
     logging.basicConfig(level=logging.INFO, format=logging.BASIC_FORMAT)
+
+    # filter framework interanl logs
+    logging.getLogger("espnet").setLevel(logging.ERROR)
+    logging.getLogger("root").setLevel(logging.ERROR)
+    logging.getLogger("dolphin").setLevel(logging.INFO)
+
     args = parser_args()
     transcribe(args)
 
 
 if __name__ == "__main__":
+
     cli()
