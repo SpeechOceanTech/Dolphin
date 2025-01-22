@@ -1,6 +1,6 @@
 # Dolphin
 
-Dolphin is a multilingual, multitask ASR model jointly trained by DataoceanAI and Tsinghua University. It is trained on a large-scale dataset of 210,000 hours, which includes both DataoceanAI's proprietary datasets and open-source datasets. The model can perform speech recognition and language identification.
+Dolphin is a multilingual, multitask ASR model jointly trained by DataoceanAI and Tsinghua University. It supports 40 Eastern languages，and has been trained on a large-scale dataset of 210,000 hours, which includes both DataoceanAI's proprietary datasets and open-source datasets. The model can perform speech recognition and language identification.
 
 ## Approach
 
