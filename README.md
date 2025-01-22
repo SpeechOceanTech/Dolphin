@@ -9,6 +9,18 @@ Dolphin is built on Whisper and OWSM, using an attention-based encoder-decoder a
 In addition，base on the characteristics of the DataocanAI dataset, Dolphin introduces region-specific tokens for different languages, enabling support for dialects. 
 
 ## Setup
+Dolphin depends on ffmpeg to convert audio to WAV. If your operating system does not have ffmpeg installed, please install it first.
+
+```shell
+# Ubuntu or Debian
+sudo apt update && sudo apt install ffmpeg
+
+# MacOS
+brew install ffmpeg
+
+# Windows
+choco install ffmpeg
+```
 
 You can install the latest version of Dolphin using the following command:
 ```shell
