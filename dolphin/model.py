@@ -278,7 +278,7 @@ class DolphinSpeech2Text(Speech2Text):
         region_sym: Optional[str] = None,
         predict_time: Optional[bool] = None,
         padding_speech: bool = True,
-    ) -> Union[ListOfHypothesis, Tuple[ListOfHypothesis, Optional[Dict[int, List[str]]]]]:
+    ) -> Dict[str, str]:
         """Inference for a single utterance.
 
         The input speech will be padded or trimmed to the fixed length,
@@ -353,5 +353,10 @@ class DolphinSpeech2Text(Speech2Text):
 
         # c. Pass the encoder result to the beam search
         results = self._decode_single_sample(enc[0])
+        text, _, _, text_nospecial, _ = results[0]
 
-        return results
+        ret = {
+            "text": text,
+            "text_nospecial": text_nospecial,
+        }
+        return ret

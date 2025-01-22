@@ -23,7 +23,7 @@ def str2bool(value: str) -> bool:
 def parser_args() -> Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("audio", type=str, help="audio file path")
-    parser.add_argument("--model_name", type=str, default="small", help="model name")
+    parser.add_argument("--model", type=str, default="small", help="model name")
     parser.add_argument("--model_dir", type=Path, required=True, help="model checkpoint download diretory")
     parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
     parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
@@ -59,8 +59,11 @@ def load_model(
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    train_cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets/config.yaml")
+    if not isinstance(model_dir, Path):
+        model_dir = Path(model_dir)
+
     model_file = model_dir / f"{model_name}.pt"
+    train_cfg = model_dir / "config.yaml"
     if not model_file.exists():
         logger.error(f"model {model_name} not found.")
         raise Exception(f"model {model_name} not found, please download the model first.")
@@ -86,20 +89,20 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
     Returns:
         result (text, text_nospecial)
     """
-    model = load_model(args.model_name, args.model_dir, args.device)
+    model_name = args.model
+    model = load_model(model_name, args.model_dir, args.device)
     waveform = load_audio(args.audio)
 
-    results = model(
+    result = model(
         speech=waveform,
         lang_sym=args.lang_sym,
         region_sym=args.region_sym,
         predict_time=args.predict_time,
         padding_speech=args.padding_speech
     )
-    text, _, _, text_nospecial, _ = results[0]
 
-    logger.info(f"decode result, text: {text}, text_nospecial: {text_nospecial}")
-    return text, text_nospecial
+    logger.info(f"decode result, text: {result['text']}")
+    return result
 
 
 def cli():

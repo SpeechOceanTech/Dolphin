@@ -21,7 +21,13 @@ setup(
     author="DataoceanAI",
     url="https://github.com/DataoceanAI/dolphin",
     license="Apache2.0",
-    packages=find_packages(),
+    packages=[
+        "dolphin",
+        "dolphin/assets",
+    ],
+    package_data={
+        "dolphin/assets": ["*"]
+    },
     install_requires=requirements
     + [
         str(r)

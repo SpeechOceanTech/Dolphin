@@ -34,7 +34,32 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 ## Available model and languages
 
-## Python usage
+TODO
+
+## Usage
+
+### Command-line usage
+
+```shell
+dolphin audio.wav --model small --model_dir /data/models/dolphin/
+
+# Specify language and region
+dolphin audio.wav --model small --model_dir /data/models/dolphin/ --lang_sym "<zh>" --region_sym "<CN>"
+
+# Nopadding speech, improve decoding speed
+dolphin audio.wav --model small --model_dir /data/models/dolphin/ --lang_sym "<zh>" --region_sym "<CN>" --paddig_speech false
+```
+
+#### Python usage
+
+```python
+import dolphin
+
+waveform = dolphin.load_audio("audio.wav")
+model = dolphin.load_model("small", "/data/models/dolphin", "cuda")
+result = model(waveform)
+print(result["text"])
+```
 
 ## License
 
