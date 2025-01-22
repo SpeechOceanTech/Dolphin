@@ -1,3 +1,17 @@
 # Dolphin
-DataOceanAI Open Large Speech Model.
 
+Dolphin is a multilingual, multitask ASR model jointly trained by DataoceanAI and Tsinghua University. It is trained on a large-scale dataset of 210,000 hours, which includes both DataoceanAI's proprietary datasets and open-source datasets. The model can perform speech recognition and language identification.
+
+## Approach
+
+TODO
+
+## Setup
+
+## Available model and languages
+
+## Python usage
+
+## License
+
+Dolphin's code and model weights are released under the Apache 2.0 License. 
