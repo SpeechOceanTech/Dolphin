@@ -1,3 +1,46 @@
+## Language Code
+| Language Code | English Name | Chinese Name |
+|---------------|--------------------------|------------------------|
+| zh            | Mandarin Chinese        | 中文                   |
+| ja            | Japanese                | 日语                   |
+| th            | Thai                     | 泰语                   |
+| ru            | Russian                  | 俄语                   |
+| ko            | Korean                   | 韩语                   |
+| id            | Indonesian              | 印度尼西亚语           |
+| vi            | Vietnamese              | 越南语                 |
+| ct            | Yue Chinese             | 粤语                   |
+| hi            | Hindi                   | 印地语                 |
+| ur            | Urdu                     | 乌尔都语               |
+| ms            | Malay                   | 马来语                 |
+| uz            | Uzbek                    | 乌兹别克语             |
+| ar            | Arabic                   | 阿拉伯语               |
+| fa            | Persian                  | 波斯语                 |
+| bn            | Bengali                  | 孟加拉语               |
+| ta            | Tamil                    | 泰米尔语               |
+| te            | Telugu                   | 泰卢固语               |
+| ug            | Uighur                   | 维吾尔语               |
+| gu            | Gujarati                 | 古吉拉特语             |
+| my            | Burmese                  | 缅甸语                 |
+| tl            | Tagalog                  | 塔加洛语               |
+| kk            | Kazakh                   | 哈萨克语               |
+| or            | Oriya / Odia             | 奥里亚语               |
+| ne            | Nepali                   | 尼泊尔语               |
+| mn            | Mongolian                | 蒙古语                 |
+| km            | Khmer                    | 高棉语                 |
+| jv            | Javanese                 | 爪哇语                 |
+| lo            | Lao                      | 老挝语                 |
+| si            | Sinhala                  | 僧伽罗语               |
+| fil           | Filipino                 | 菲律宾语               |
+| ps            | Pushto                   | 普什图语               |
+| pa            | Panjabi                  | 旁遮普语               |
+| kab           | Kabyle                   | 卡拜尔语               |
+| ba            | Bashkir                  | 巴什基尔语             |
+| ks            | Kashmiri                 | 克什米尔语             |
+| tg            | Tajik                    | 塔吉克语               |
+| su            | Sundanese                | 巽他语                 |
+| mr            | Marathi                  | 马拉地语               |
+| ky            | Kirghiz                  | 吉尔吉斯语             |
+| az            | Azerbaijani              | 阿塞拜疆语             |
 
 ## Language Region Code
 
