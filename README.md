@@ -36,6 +36,11 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 TODO
 
+### Languages
+
+Dolphin covers 40 languages in the Eastern region and supports 22 Chinese dialects.
+[Language codes](./languages.md)
+
 ## Usage
 
 ### Command-line usage
