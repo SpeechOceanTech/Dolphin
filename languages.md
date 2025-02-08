@@ -1,4 +1,5 @@
 ## Language Code
+
 | Language Code | English Name | Chinese Name |
 |---------------|--------------------------|------------------------|
 | zh            | Mandarin Chinese        | 中文                   |
