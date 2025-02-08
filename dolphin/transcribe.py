@@ -1,10 +1,11 @@
 # encoding: utf8
 
-import os
+import yaml
 import logging
 import argparse
 from argparse import Namespace
 from pathlib import Path
+from os.path import dirname, join, abspath, join
 from distutils.util import strtobool
 from typing import Union, Optional, Tuple
 
@@ -16,14 +17,53 @@ from .model import DolphinSpeech2Text
 logger = logging.getLogger("dolphin")
 
 
+MODELS = {
+    "base": {
+        "download_url": "",
+        "config": {
+            "encoder": {
+                "output_size": 512,
+                "attention_heads": 8,
+                "cgmlp_linear_units": 2048,
+                "num_blocks": 6,
+                "linear_units": 2048,
+            },
+            "decoder": {
+                "attention_heads": 8,
+                "linear_units": 2048,
+                "num_blocks": 6,
+            }
+        }
+    },
+    "small": {
+        "download_url": "",
+        "config": {
+            "encoder": {
+                "output_size": 768,
+                "attention_heads": 12,
+                "cgmlp_linear_units": 3072,
+                "num_blocks": 12,
+                "linear_units": 1536,
+            },
+            "decoder": {
+                "attention_heads": 12,
+                "linear_units": 3072,
+                "num_blocks": 12,
+            }
+        }
+    },
+}
+
+
 def str2bool(value: str) -> bool:
+
     return bool(strtobool(value))
 
 
 def parser_args() -> Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("audio", type=str, help="audio file path")
-    parser.add_argument("--model", type=str, default="small", help="model name")
+    parser.add_argument("--model", type=str, default="small", help="model name (default small)")
     parser.add_argument("--model_dir", type=Path, required=True, help="model checkpoint download diretory")
     parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
     parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
@@ -59,11 +99,14 @@ def load_model(
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    if not isinstance(model_dir, Path):
-        model_dir = Path(model_dir)
-
     model_file = model_dir / f"{model_name}.pt"
-    train_cfg = model_dir / "config.yaml"
+    model_config = MODELS[model_name]["config"]
+    train_cfg_file = join(dirname(abspath(__file__)), "assets/config.yaml")
+    with open(train_cfg_file, "r", encoding="utf-8") as f:
+        train_cfg = yaml.safe_load(f)
+        train_cfg["encoder_conf"].update(**model_config["encoder"])
+        train_cfg["decoder_conf"].update(**model_config["decoder"])
+
     if not model_file.exists():
         logger.error(f"model {model_name} not found.")
         raise Exception(f"model {model_name} not found, please download the model first.")
@@ -90,6 +133,12 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
         result (text, text_nospecial)
     """
     model_name = args.model
+    if model_name not in MODELS:
+        logging.error(f"Unknown model {model_name}, Dolphin open source base, small model, please config the correct model.")
+        return
+
+    # TODO 下载模型
+
     model = load_model(model_name, args.model_dir, args.device)
     waveform = load_audio(args.audio)
 
@@ -106,7 +155,8 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
 
 
 def cli():
-    logging.basicConfig(level=logging.INFO, format=logging.BASIC_FORMAT)
+    LOGGING_FORMAT="[%(asctime)s] [%(levelname)s] [%(filename)s:%(lineno)d:%(funcName)s] %(message)s"
+    logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
 
     # filter framework interanl logs
     logging.getLogger("espnet").setLevel(logging.ERROR)
@@ -118,5 +168,4 @@ def cli():
 
 
 if __name__ == "__main__":
-
     cli()

@@ -5,6 +5,7 @@ import yaml
 import logging
 import argparse
 from pathlib import Path
+from os.path import join, dirname, abspath
 from typing import Union, Optional, List, Tuple, Dict
 
 import numpy as np
@@ -35,7 +36,7 @@ class DolphinSpeech2Text(Speech2Text):
     @typechecked
     def __init__(
         self,
-        s2t_train_config: Union[Path, str, None] = None,
+        s2t_train_config: Union[Path, str, Dict] = None,
         s2t_model_file: Union[Path, str, None] = None,
         lm_train_config: Union[Path, str, None] = None,
         lm_file: Union[Path, str, None] = None,
@@ -137,7 +138,7 @@ class DolphinSpeech2Text(Speech2Text):
             ]
             if len(non_batch) == 0:
                 beam_search.__class__ = BatchBeamSearch
-                logger.info("BatchBeamSearch implementation is selected.")
+                # logger.info("BatchBeamSearch implementation is selected.")
             else:
                 logger.warning(
                     f"As non-batch scorers {non_batch} are found, "
@@ -173,7 +174,7 @@ class DolphinSpeech2Text(Speech2Text):
     @staticmethod
     @typechecked
     def build_model_from_file(
-        config_file: Optional[Union[Path, str]] = None,
+        config: Optional[Union[Path, str, Dict]] = None,
         model_file: Optional[Union[Path, str]] = None,
         device: str = "cpu",
     ) -> Tuple[AbsESPnetModel, argparse.Namespace]:
@@ -187,10 +188,13 @@ class DolphinSpeech2Text(Speech2Text):
             device: Device type, "cpu", "cuda", or "cuda:N".
 
         """
-        with open(config_file, "r", encoding="utf-8") as f:
-            args = yaml.safe_load(f)
-        args = argparse.Namespace(**args)
-        args.normalize_conf["stats_file"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets/feats_stats.npz")
+        if isinstance(config, dict):
+            args = argparse.Namespace(**config)
+        else:
+            with open(config, "r", encoding="utf-8") as f:
+                args = yaml.safe_load(f)
+            args = argparse.Namespace(**args)
+        args.normalize_conf["stats_file"] = os.path.join(dirname(abspath(__file__)), "assets/feats_stats.npz")
 
         model = S2TTask.build_model(args)
         if not isinstance(model, AbsESPnetModel):
