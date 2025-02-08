@@ -38,8 +38,7 @@ TODO
 
 ### Languages
 
-Dolphin covers 40 languages in the Eastern region and supports 22 Chinese dialects.
-[Language codes](./languages.md)
+Dolphin covers 40 [Eastern languages](./languages.md) and supports 22 Chinese dialects.
 
 ## Usage
 
