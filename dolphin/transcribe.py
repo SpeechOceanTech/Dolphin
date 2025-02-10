@@ -1,10 +1,13 @@
 # encoding: utf8
 
 import yaml
+import urllib
+import tqdm
 import logging
 import argparse
 from argparse import Namespace
 from pathlib import Path
+import os.path
 from os.path import dirname, join, abspath, join
 from distutils.util import strtobool
 from typing import Union, Optional, Tuple
@@ -36,7 +39,7 @@ MODELS = {
         }
     },
     "small": {
-        "download_url": "",
+        "download_url": "http://so-algorithm-prod.oss-cn-beijing.aliyuncs.com/models/dolphin/small.pt",
         "config": {
             "encoder": {
                 "output_size": 768,
@@ -64,7 +67,7 @@ def parser_args() -> Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("audio", type=str, help="audio file path")
     parser.add_argument("--model", type=str, default="small", help="model name (default small)")
-    parser.add_argument("--model_dir", type=Path, required=True, help="model checkpoint download diretory")
+    parser.add_argument("--model_dir", type=Path, default=None, help="model checkpoint download diretory")
     parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
     parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
     parser.add_argument("--dtype", type=str, default="float32", help="data type (default: float32)")
@@ -99,7 +102,6 @@ def load_model(
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    model_file = model_dir / f"{model_name}.pt"
     model_config = MODELS[model_name]["config"]
     train_cfg_file = join(dirname(abspath(__file__)), "assets/config.yaml")
     with open(train_cfg_file, "r", encoding="utf-8") as f:
@@ -107,6 +109,7 @@ def load_model(
         train_cfg["encoder_conf"].update(**model_config["encoder"])
         train_cfg["decoder_conf"].update(**model_config["decoder"])
 
+    model_file = model_dir / f"{model_name}.pt"
     if not model_file.exists():
         logger.error(f"model {model_name} not found.")
         raise Exception(f"model {model_name} not found, please download the model first.")
@@ -120,6 +123,26 @@ def load_model(
         **kwargs,
     )
     return model
+
+
+def _download(url: str, download_path: str) -> None:
+    filename = os.path.basename(download_path)
+    with urllib.request.urlopen(url) as source, open(download_path, "wb") as output:
+        with tqdm.tqdm(
+            total=int(source.info().get("Content-Length")),
+            ncols=80,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+            desc=f"download model {filename}"
+        ) as loop:
+            while True:
+                buffer = source.read(8192)
+                if not buffer:
+                    break
+
+                output.write(buffer)
+                loop.update(len(buffer))
 
 
 def transcribe(args: Namespace) -> Tuple[str, str]:
@@ -137,9 +160,17 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
         logging.error(f"Unknown model {model_name}, Dolphin open source base, small model, please config the correct model.")
         return
 
-    # TODO 下载模型
+    model_dir: Path = args.model_dir
+    model_dir = model_dir if model_dir else join(os.path.expanduser("~"), ".cache/dolphin")
+    model_dir = Path(model_dir)
+    model_path = model_dir / f"{model_name}.pt"
+    if not model_path.exists():
+        # Download model
+        model_dir.mkdir(exist_ok=True)
+        url = MODELS[model_name]["download_url"]
+        _download(url, model_path)
 
-    model = load_model(model_name, args.model_dir, args.device)
+    model = load_model(model_name, model_dir, args.device)
     waveform = load_audio(args.audio)
 
     result = model(
