@@ -70,10 +70,9 @@ def parser_args() -> Namespace:
     parser.add_argument("--model_dir", type=Path, default=None, help="model checkpoint download diretory")
     parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
     parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
-    parser.add_argument("--dtype", type=str, default="float32", help="data type (default: float32)")
     parser.add_argument("--device", type=str, default=None, help="torch device (default: None)")
     parser.add_argument("--normalize_length", type=str2bool, default=False, help="whether to normalize length (default: false)")
-    parser.add_argument("--padding_speech", type=str2bool, default=True, help="whether padding speech to 30 seconds (default: true)")
+    parser.add_argument("--padding_speech", type=str2bool, default=False, help="whether padding speech to 30 seconds (default: true)")
     parser.add_argument("--predict_time", type=str2bool, default=True, help="whether predict timestamp (default: true)")
     parser.add_argument("--beam_size", type=int, default=5, help="number of beams in beam search (default: 5)")
     parser.add_argument("--maxlenratio", type=float, default=0.0, help="Input length ratio to obtain max output length (default: 0.0)")
@@ -170,9 +169,17 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
         url = MODELS[model_name]["download_url"]
         _download(url, model_path)
 
-    model = load_model(model_name, model_dir, args.device)
+    logger.info("loading model...")
+    model_kwargs = {
+        "device": args.device,
+        "normalize_length": args.normalize_length,
+        "beam_size": args.beam_size,
+        "maxlenratio": args.maxlenratio,
+    }
+    model = load_model(model_name, model_dir, **model_kwargs)
     waveform = load_audio(args.audio)
 
+    logger.info("inference...")
     result = model(
         speech=waveform,
         lang_sym=args.lang_sym,
