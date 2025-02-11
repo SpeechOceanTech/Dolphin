@@ -75,7 +75,7 @@
 | ko-KR              | Korean                           | 韩语                  |
 | id-ID              | Indonesian                       | 印度尼西亚语          |
 | vi-VN              | Vietnamese                       | 越南语                |
-| ct-NULL            | Yue (Chinese)                    | 粤语                  |
+| ct-NULL            | Yue (Unknown)                    | 粤语(未知)                  |
 | ct-HK              | Yue (Hongkong)                   | 粤语(香港)            |
 | ct-GZ              | Yue (Guangdong)                  | 粤语(广东)            |
 | hi-IN              | Hindi                            | 印地语                |
