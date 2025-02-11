@@ -45,13 +45,16 @@ Dolphin covers 40 [Eastern languages](./languages.md) and supports 22 Chinese di
 ### Command-line usage
 
 ```shell
+dolphin audio.wav
+
+# Download model and specify the model path
 dolphin audio.wav --model small --model_dir /data/models/dolphin/
 
 # Specify language and region
 dolphin audio.wav --model small --model_dir /data/models/dolphin/ --lang_sym "<zh>" --region_sym "<CN>"
 
-# Nopadding speech, improve decoding speed
-dolphin audio.wav --model small --model_dir /data/models/dolphin/ --lang_sym "<zh>" --region_sym "<CN>" --paddig_speech false
+# padding speech to 30 seconds
+dolphin audio.wav --model small --model_dir /data/models/dolphin/ --lang_sym "<zh>" --region_sym "<CN>" --paddig_speech true
 ```
 
 #### Python usage
