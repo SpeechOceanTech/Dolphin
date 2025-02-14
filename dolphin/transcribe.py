@@ -15,7 +15,7 @@ from typing import Union, Optional, Tuple
 import torch
 
 from .audio import load_audio
-from .model import DolphinSpeech2Text
+from .model import DolphinSpeech2Text, TranscribeResult
 
 logger = logging.getLogger("dolphin")
 
@@ -83,7 +83,7 @@ def parser_args() -> Namespace:
 
 def load_model(
     model_name: str,
-    model_dir: Path,
+    model_dir: Union[Path, str],
     device: Optional[Union[str, torch.device]] = None,
     **kwargs
 ) -> DolphinSpeech2Text:
@@ -108,7 +108,7 @@ def load_model(
         train_cfg["encoder_conf"].update(**model_config["encoder"])
         train_cfg["decoder_conf"].update(**model_config["decoder"])
 
-    if isinstance(model_dir, "str"):
+    if isinstance(model_dir, str):
         model_dir = Path(model_dir)
 
     model_file = model_dir / f"{model_name}.pt"
@@ -147,7 +147,7 @@ def _download(url: str, download_path: str) -> None:
                 loop.update(len(buffer))
 
 
-def transcribe(args: Namespace) -> Tuple[str, str]:
+def transcribe(args: Namespace) -> TranscribeResult:
     """
     Transcribe audio to text.
 
@@ -155,7 +155,7 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
         args: the command line parameters
 
     Returns:
-        result (text, text_nospecial)
+        TranscribeResult
     """
     model_name = args.model
     if model_name not in MODELS:
@@ -191,7 +191,7 @@ def transcribe(args: Namespace) -> Tuple[str, str]:
         padding_speech=args.padding_speech
     )
 
-    logger.info(f"decode result, text: {result['text']}")
+    logger.info(f"decode result, language: {result.language}, region: {result.region}, text: {result.text}")
     return result
 
 

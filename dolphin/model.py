@@ -3,6 +3,7 @@
 import os
 import yaml
 import logging
+import dataclasses
 import argparse
 from pathlib import Path
 from os.path import join, dirname, abspath
@@ -29,6 +30,14 @@ from .constants import (SPEECH_LENGTH, SAMPLE_RATE, FIRST_TIME_SYMBOL, LAST_TIME
 
 
 logger = logging.getLogger("dolphin")
+
+
+@dataclasses.dataclass
+class TranscribeResult:
+    text: str
+    text_nospecial: str
+    language: str
+    region: str
 
 
 class DolphinSpeech2Text(Speech2Text):
@@ -282,7 +291,7 @@ class DolphinSpeech2Text(Speech2Text):
         region_sym: Optional[str] = None,
         predict_time: Optional[bool] = None,
         padding_speech: bool = True,
-    ) -> Dict[str, str]:
+    ) -> TranscribeResult:
         """Inference for a single utterance.
 
         The input speech will be padded or trimmed to the fixed length,
@@ -296,7 +305,7 @@ class DolphinSpeech2Text(Speech2Text):
             padding_speech: whether to padding speech to 30 seconds, default is true
 
         Returns:
-            n-best list of (text, token, token_int, text_nospecial, hyp)
+            TranscribeResult
 
         """
 
@@ -359,8 +368,6 @@ class DolphinSpeech2Text(Speech2Text):
         results = self._decode_single_sample(enc[0])
         text, _, _, text_nospecial, _ = results[0]
 
-        ret = {
-            "text": text,
-            "text_nospecial": text_nospecial,
-        }
+        lang, region = self.converter.ids2tokens([lang_id, region_id])
+        ret = TranscribeResult(text, text_nospecial, lang[1:-1], region[1:-1])
         return ret
