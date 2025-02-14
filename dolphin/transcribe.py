@@ -108,6 +108,9 @@ def load_model(
         train_cfg["encoder_conf"].update(**model_config["encoder"])
         train_cfg["decoder_conf"].update(**model_config["decoder"])
 
+    if isinstance(model_dir, "str"):
+        model_dir = Path(model_dir)
+
     model_file = model_dir / f"{model_name}.pt"
     if not model_file.exists():
         logger.error(f"model {model_name} not found.")
