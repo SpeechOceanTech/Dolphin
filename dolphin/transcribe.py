@@ -22,7 +22,7 @@ logger = logging.getLogger("dolphin")
 
 MODELS = {
     "base": {
-        "download_url": "",
+        "download_url": "http://so-algorithm-prod.oss-cn-beijing.aliyuncs.com/models/dolphin/base.pt",
         "config": {
             "encoder": {
                 "output_size": 512,
@@ -66,13 +66,13 @@ def str2bool(value: str) -> bool:
 def parser_args() -> Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("audio", type=str, help="audio file path")
-    parser.add_argument("--model", type=str, default="small", help="model name (default small)")
+    parser.add_argument("--model", type=str, default="small", help="model name (default: small)")
     parser.add_argument("--model_dir", type=Path, default=None, help="model checkpoint download diretory")
     parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
     parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
     parser.add_argument("--device", type=str, default=None, help="torch device (default: None)")
     parser.add_argument("--normalize_length", type=str2bool, default=False, help="whether to normalize length (default: false)")
-    parser.add_argument("--padding_speech", type=str2bool, default=False, help="whether padding speech to 30 seconds (default: true)")
+    parser.add_argument("--padding_speech", type=str2bool, default=False, help="whether padding speech to 30 seconds (default: false)")
     parser.add_argument("--predict_time", type=str2bool, default=True, help="whether predict timestamp (default: true)")
     parser.add_argument("--beam_size", type=int, default=5, help="number of beams in beam search (default: 5)")
     parser.add_argument("--maxlenratio", type=float, default=0.0, help="Input length ratio to obtain max output length (default: 0.0)")
