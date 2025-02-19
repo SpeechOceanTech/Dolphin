@@ -16,6 +16,7 @@ import torch
 
 from .audio import load_audio
 from .model import DolphinSpeech2Text, TranscribeResult
+from .languages import LANGUAGE_REGION_CODES
 
 logger = logging.getLogger("dolphin")
 
@@ -68,8 +69,8 @@ def parser_args() -> Namespace:
     parser.add_argument("audio", type=str, help="audio file path")
     parser.add_argument("--model", type=str, default="small", help="model name (default: small)")
     parser.add_argument("--model_dir", type=Path, default=None, help="model checkpoint download diretory")
-    parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. <zh>)")
-    parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. <CN>)")
+    parser.add_argument("--lang_sym", type=str, default=None, help="language symbol (e.g. zh)")
+    parser.add_argument("--region_sym", type=str, default=None, help="regiion symbol (e.g. CN)")
     parser.add_argument("--device", type=str, default=None, help="torch device (default: None)")
     parser.add_argument("--normalize_length", type=str2bool, default=False, help="whether to normalize length (default: false)")
     parser.add_argument("--padding_speech", type=str2bool, default=False, help="whether padding speech to 30 seconds (default: false)")
@@ -179,14 +180,25 @@ def transcribe(args: Namespace) -> TranscribeResult:
         "beam_size": args.beam_size,
         "maxlenratio": args.maxlenratio,
     }
+
+    if all([args.lang_sym, args.region_sym]):
+        if f"{args.lang_sym}-{args.region_sym}" not in LANGUAGE_REGION_CODES:
+            raise Exception("Unsupport language or region!")
+
+        lang_sym = f"<{args.lang_sym}>"
+        region_sym = f"<{args.region_sym}>"
+    else:
+        lang_sym = None
+        region_sym = None
+
     model = load_model(model_name, model_dir, **model_kwargs)
     waveform = load_audio(args.audio)
 
     logger.info("inference...")
     result = model(
         speech=waveform,
-        lang_sym=args.lang_sym,
-        region_sym=args.region_sym,
+        lang_sym=lang_sym,
+        region_sym=region_sym,
         predict_time=args.predict_time,
         padding_speech=args.padding_speech
     )
