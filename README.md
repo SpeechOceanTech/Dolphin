@@ -34,8 +34,6 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 ## Available model and languages
 
-TODO
-
 ### Languages
 
 Dolphin covers 40 [Eastern languages](./languages.md) and supports 22 Chinese dialects.
